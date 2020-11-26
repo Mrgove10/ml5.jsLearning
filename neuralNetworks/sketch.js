@@ -8,23 +8,49 @@ function setup() {
         inputs: ['x', 'y'],
         outputs: ['label'],
         task: 'classification',
-        debug: true
+        debug: true,
+        learningRate: 0.5
     }
 
     model = ml5.neuralNetwork(options);
-    background(225)
+    model.loadData('./mouse-data.json', dataLoaded);
+    background(225);
+}
+
+function dataLoaded() {
+    let data = model.neuralNetworkData.data.raw;
+    //console.log(data);
+    data.forEach(element => {
+        let input = element.xs;
+        let target = element.ys;
+        stroke(0);
+        noFill();
+        ellipse(input.x, input.y, 24);
+        fill(0);
+        noStroke();
+        textAlign(CENTER, CENTER);
+        text(target.label, input.x, input.y);
+    });
+    train()
+}
+
+function train() {
+    state = 'training'
+    console.log("training Started");
+    model.normalizeData();
+
+    let options = {
+        epochs: 100
+    }
+    model.train(options, whileTraining, finishedTraining)
 }
 
 function keyPressed() {
     if (key == 't') {
-        state = 'training'
-        console.log("training Started");
-        model.normalizeData();
-
-        let options = {
-            epochs: 100
-        }
-        model.train(options, whileTraining, finishedTraining)
+        train()
+    }
+    else if (key == 's') {
+        model.saveData('mouse');
     }
     else {
         targetLabel = key.toUpperCase();
