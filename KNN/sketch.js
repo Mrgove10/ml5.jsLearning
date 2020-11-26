@@ -14,17 +14,22 @@ function setup() {
     video.hide();
     features = ml5.featureExtractor('MobileNet', () => {
         console.log("Model ready !");
+        knn = ml5.KNNClassifier();
+        knn.load('model.json', () => {
+            console.log("knn data loaded");
+            classify();
+        });
     });
-    knn = ml5.KNNClassifier();
     createP("press key r for training right hand up");
     createP("press key l for training left hand up");
     createP("press key u for training no hand");
+    createP("press key s to save the model");
     labels = createP("need trainig data");
 }
 
 function draw() {
     image(video, 0, 0) // draw the video on the canvas
-    if (!ready && knn.getNumLabels() > 0) {
+    if (videoOk && !ready && knn != undefined && knn.getNumLabels() > 0) {
         classify();
         ready = true;
     }
@@ -38,6 +43,7 @@ function classify() {
             console.error(error);
         }
         else {
+            // console.log(result);
             labels.html(result.label);
             classify();
         }
@@ -48,16 +54,19 @@ function keyPressed() {
     const logits = features.infer(video);
 
     if (key === "l") {
-        knn.addExample(logits, "left")
-        console.log("left")
+        knn.addExample(logits, "left");
+        console.log("left");
     }
     if (key === "r") {
-        knn.addExample(logits, "right")
-        console.log("right")
+        knn.addExample(logits, "right");
+        console.log("right");
     }
     if (key === "u") {
-        knn.addExample(logits, "up")
-        console.log("up")
+        knn.addExample(logits, "up");
+        console.log("up");
+    }
+    if (key === "s") {
+        knn.save("model.json");
     }
     // logits.print();
     // console.log(logits.dataSync())
