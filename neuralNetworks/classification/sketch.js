@@ -14,6 +14,14 @@ function setup() {
 
     model = ml5.neuralNetwork(options);
     model.loadData('./mouse-data.json', dataLoaded);
+    const modelInfo = {
+        model: './models/mouse-model.json',
+        metadata: './models/mouse-model_meta.json',
+        weights: './models/mouse-model.weights.bin'
+    };
+    model.load('./models/model.json', () => {
+        state = 'prediction'
+    });
     background(225);
 }
 
@@ -31,7 +39,7 @@ function dataLoaded() {
         textAlign(CENTER, CENTER);
         text(target.label, input.x, input.y);
     });
-    train()
+    //train()
 }
 
 function train() {
@@ -50,7 +58,10 @@ function keyPressed() {
         train()
     }
     else if (key == 's') {
-        model.saveData('mouse');
+        model.saveData('mouse-data');
+    }
+    else if (key == 'm') {
+        model.save();
     }
     else {
         targetLabel = key.toUpperCase();
