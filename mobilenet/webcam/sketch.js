@@ -2,29 +2,21 @@ let classifiermobilenet;
 let video;
 let label = '';
 let prob = '';
-function modelReady() {
-    console.log("Model ready !");
-    classifiermobilenet.predict(video, gotresult);
-}
-function gotresult(error, result) {
-    if (error) {
-        console.error(error)
-    }
-    else {
-        //console.log(result);
-        label = result[0].label;
-        prob = result[0].confidence;
-        classifiermobilenet.predict(video, gotresult);
-    }
-}
+let videoOk = false;
+
 function setup() {
     createCanvas(600, 400);
     background(0);
-    console.log('ml5 version:', ml5.version);
-    classifiermobilenet = ml5.imageClassifier('MobileNet', modelReady);
     label = "Loading . . .";
-    video = createCapture(VIDEO)
+    video = createCapture(VIDEO, () => {
+        console.log("video created")
+        videoOk = true;
+    })
     video.hide();
+    classifiermobilenet = ml5.imageClassifier('MobileNet', () => {
+        console.log("Model ready !");
+        classifiermobilenet.predict(video, gotresult);
+    });
 }
 
 function draw() {
@@ -32,4 +24,16 @@ function draw() {
     fill(255)
     textSize(32)
     text(label, 10, height - 20)
+}
+
+function gotresult(error, result) {
+    if (error) {
+        console.error(error)
+    }
+    //console.log(result);
+    label = result[0].label;
+    prob = result[0].confidence;
+    if (videoOk === true) {
+        classifiermobilenet.predict(video, gotresult);
+    }
 }

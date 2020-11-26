@@ -1,17 +1,18 @@
 let video;
 let detector;
 let detections = [];
-
-function preload() {
-    detector = ml5.objectDetector('cocossd');
-}
-
+let videoOk = false;
 function setup() {
     createCanvas(640, 480);
-    video = createCapture(VIDEO)
+    video = createCapture(VIDEO, () => {
+        console.log("video created")
+        videoOk = true;
+    })
     video.size(640, 480)
     video.hide()
-    detector.detect(video, gotdetector)
+    detector = ml5.objectDetector('cocossd', () => {
+        console.log('cocossd loaded');
+    });
 }
 
 function draw() {
@@ -27,7 +28,9 @@ function draw() {
         textSize(24);
         text(element.label, element.x + 10, element.y + 24);
     });
-    detector.detect(video, gotdetector)
+    if (videoOk) {
+        detector.detect(video, gotdetector)
+    }
 }
 
 function gotdetector(error, result) {
@@ -35,5 +38,4 @@ function gotdetector(error, result) {
         console.error(error)
     }
     detections = result;
-    detector.detect(video, gotdetector)
 }
