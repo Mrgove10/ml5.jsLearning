@@ -18,7 +18,7 @@ function setup() {
     video.hide();
     mobilenet = ml5.featureExtractor('MobileNet', () => {
         console.log("Model ready !");
-        classifier.load('/featureExtraxtion/saveload/model.json', () => {
+        classifier.load('./model.json', () => {
             console.log("Custom Model ready !");
             label = 'model ready';
         });
