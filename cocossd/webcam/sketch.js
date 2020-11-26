@@ -36,6 +36,3 @@ function gotdetector(error, result) {
     detections = result;
     detector.detect(video, gotdetector)
 }
-
-https://www.youtube.com/watch?v=QEzRxnuaZCk&list=PLRqwX-V7Uu6YPSwT06y_AEYTqIwbeam3y&index=5
-127.0.0.1:8080/
