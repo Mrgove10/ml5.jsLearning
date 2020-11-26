@@ -51,7 +51,7 @@ function gotresult(error, result) {
     if (error) {
         console.error(error)
     }
-    console.log(result);
+   // console.log(result);
     value = result.value;
     if (videoOk === true) {
         predictor.predict(video, gotresult);
