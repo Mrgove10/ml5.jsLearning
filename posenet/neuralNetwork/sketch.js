@@ -8,6 +8,8 @@ let brain;
 let state = 'waiting';
 let targetLabel;
 
+let showTarget = 'Y';
+
 function setup() {
     createCanvas(640, 480);
     background(0);
@@ -59,8 +61,9 @@ function gotResults(error, results) {
     if (error) {
         console.error(error);
     }
-    console.log(results);
-    console.log(results[0].label);
+    // console.log(results);
+    console.log(results[0].confidence);
+    showTarget = results[0].label.toUpperCase();
     classifyPoose();
 }
 
@@ -82,6 +85,12 @@ function draw() {
             });
         });
     }
+
+    fill(255, 0, 255);
+    noStroke();
+    textSize(255)
+    textAlign(CENTER, CENTER);
+    text(showTarget, width / 2, height / 2)
 }
 
 function gotPoses(poses) {
@@ -89,6 +98,6 @@ function gotPoses(poses) {
     if (poses.length > 0) {
         // we got at least one pose
         pose = poses[0].pose;
-    skeleton = poses[0].skeleton; 
-   }
+        skeleton = poses[0].skeleton;
+    }
 }
