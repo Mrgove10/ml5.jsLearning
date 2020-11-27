@@ -3,6 +3,10 @@ let videoReady = false;
 let posenet;
 let pose;
 let skeleton;
+
+let brain;
+let state = 'waiting';
+let targetLabel;
 function setup() {
     createCanvas(640, 480);
     background(0);
@@ -14,14 +18,39 @@ function setup() {
     posenet = ml5.poseNet(video, () => {
         console.log('model loaded')
     });
-    posenet.on('pose', gotPoses)
+    posenet.on('pose', gotPoses);
+
+    let options = {
+        inputs: 34,
+        outputs: 4,
+        task: 'classification',
+        debug: true
+    }
+    brain = ml5.neuralNetwork(options);
+}
+
+function keyPressed() {
+    if (key === 's') {
+        brain.saveData();
+    }
+    else {
+        targetLabel = key;
+        console.log(targetLabel);
+        setTimeout(() => {
+            console.log('collecting');
+            state = 'collecting'
+            setTimeout(() => {
+                console.log('not collecting');
+                state = 'waiting'
+            }, 5000);
+        }, 2500);
+    }
 }
 
 function draw() {
     image(video, 0, 0);
 
     if (pose) {
-
         pose.keypoints.forEach(element => {
             fill(0, 255, 0)
             ellipse(element.position.x, element.position.y, 10)
@@ -45,5 +74,15 @@ function gotPoses(poses) {
         // we got at least one pose
         pose = poses[0].pose;
         skeleton = poses[0].skeleton;
+
+        if (state == 'collecting') {
+            let inputs = [];
+            let target = [targetLabel];
+            pose.keypoints.forEach(element => {
+                inputs.push(element.position.x);
+                inputs.push(element.position.y);
+            });
+            brain.addData(inputs, target)
+        }
     }
 }
