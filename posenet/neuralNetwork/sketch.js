@@ -63,7 +63,9 @@ function gotResults(error, results) {
     }
     // console.log(results);
     console.log(results[0].confidence);
-    showTarget = results[0].label.toUpperCase();
+    if(results[0].confidence >= 0.75){
+        showTarget = results[0].label.toUpperCase();
+    }
     classifyPoose();
 }
 
